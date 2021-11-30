@@ -15,10 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from pybo import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('pybo/', views.index)
-    path('pybo/', include('pybo.urls')) #pybo 뒤에 오는 애들은 pybo 폴더의 urls.py에 관련짓는다
-   
+    path('pybo/', include('pybo.urls')), #pybo 뒤에 오는 애들은 pybo 폴더의 urls.py에 관련짓는다
 ]
