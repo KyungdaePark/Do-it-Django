@@ -1,8 +1,9 @@
+{% extends 'base.html' %}
 <!-- 스타일 적용-->
-{% load static %}
+<!-- {% load static %}
 <link rel = "stylesheet" type = "text/css" href = "{% static 'bootstrap.min.css' %}"
-
-
+-->
+{% block content %}
 <div class ="container my-3">
     <h2 class = "border-bottom-py-2">{{question.subject}}</h2>
     <div class = "card my-3">
@@ -30,5 +31,7 @@
             <textarea name = "content" id="content" class="form-control" rows="10"></textarea>
         </div>
         <input type = "submit" value="답변등록" class="btn btn-primary">
+        <button type = "submit" class= "btn btn-primary">답변 등록</button>
     </form>
 </div>
+{% endblock %}

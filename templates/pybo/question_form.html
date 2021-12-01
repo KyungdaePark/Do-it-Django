@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class = "container">
+    <h5 class = "my-3 border-bottom pb-2">질문등록</h5>
+    <form method="post" class="post-form my-3">
+        {% csrf_token %}
+        {{ form.as_p }} <!-- subject, content속성에 해당하는 html 코드를 자동으로 생성 -->
+        <button type="submit" class="btn btn-primary">저장하기</button> <!-- button 속성에 action="{% url 'pybo:question_create'%}"-->
+        <!-- 안했음 : url을 안할 경우 default값으로 현재 페이지(question_create이니까 question/create/)가 정해져 버튼을 누를경우 현재 페이지로
+        데이터 전송됨-->
+        <!-- 그런데 이렇게 안할 경우 다른 페이지에서 이 버튼을 누르게 할 경우 일일이 지정해 줄 필요 없이 자기 자신 페이지로 돌아가게 하기위해
+        일부러 비워두는 것임. (질문 수정도 이걸로 할거임)-->
+    </form> 
+</div>
+{% endblock %}
