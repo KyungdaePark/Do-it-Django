@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 #from django.http import HttpResponse
-from .models import Question, Answer
-from .forms import QuestionForm
+from .models import Question
+from .forms import QuestionForm, AnswerForm
 # Create your views here.
 
 def index(request):
@@ -22,21 +22,26 @@ def detail(request, question_id):
     context = {'question' : question}
     return render(request, 'pybo/question_detail.html', context)
 
-def answer_create(request, question_id):
+def answer_create(request,question_id):
+    ## 질문 등록하기 버튼 과 저장하기 버튼 둘다 question_create를 호출함 : 구분을 post와 get으로 한다.
     """
-        pybo 답변등록
+        pybo 답변등록 : post
+        get 은 그냥 형식 통일상 ㅇㅇ
     """
-    question = get_object_or_404(Question, pk = question_id)
-    answer = Answer(question=question,
-                    content = request.POST.get('content'),
-                    create_date =timezone.now()        
-            )
-    answer.save()
-    # question.answer_set.create(
-    #     content = request.POST.get('content'),
-    #     create_date = timezone.now()    
-    # ) !!!!same!!!!
-    return redirect('pybo:detail', question_id = question.id)
+    #post
+    question = get_object_or_404(Question, pk=question_id)
+    if request.method == 'POST':
+        form = AnswerForm(request.POST) #request.POST 에는 subject와 content가 들어있음
+        if form.is_valid():
+            answer = form.save(commit=False) # 임시저장 : creat_date 정보가 없기 때문
+            answer.create_date = timezone.now()
+            answer.question = question
+            answer.save()
+            return redirect('pybo:detail', question_id=question_id)
+    else:
+        form = AnswerForm() #get
+    context = {'form' : form, 'question' :question}
+    return render(request, 'pybo/question_detail.html', context)
 
 def question_create(request):
     ## 질문 등록하기 버튼 과 저장하기 버튼 둘다 question_create를 호출함 : 구분을 post와 get으로 한다.
@@ -49,7 +54,7 @@ def question_create(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST) #request.POST 에는 subject와 content가 들어있음
         if form.is_valid():
-            question = form.save(commit=False)
+            question = form.save(commit=False) # 임시저장 : creat_date 정보가 없기 때문
             question.create_date = timezone.now()
             question.save()
             return redirect('pybo:index')

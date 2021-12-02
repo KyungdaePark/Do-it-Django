@@ -15,7 +15,7 @@
     </thead>
     <tbody>
         {% if question_list %} 
-            {% for question in question_list %}
+            {% for question in question_list reversed %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td><a href = "{% url 'pybo:detail' question.id %}">{{question.subject}}</a></td>
