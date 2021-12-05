@@ -5,6 +5,7 @@ from django.utils import timezone
 from .models import Question
 from .forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def index(request):
@@ -35,6 +36,7 @@ def detail(request, question_id):
     context = {'question' : question}
     return render(request, 'pybo/question_detail.html', context)
 
+@login_required(login_url = 'common:login')
 def answer_create(request,question_id):
     ## 질문 등록하기 버튼 과 저장하기 버튼 둘다 question_create를 호출함 : 구분을 post와 get으로 한다.
     """
@@ -47,6 +49,7 @@ def answer_create(request,question_id):
         form = AnswerForm(request.POST) #request.POST 에는 subject와 content가 들어있음
         if form.is_valid():
             answer = form.save(commit=False) # 임시저장 : creat_date 정보가 없기 때문
+            answer.author = request.user
             answer.create_date = timezone.now()
             answer.question = question
             answer.save()
@@ -56,6 +59,7 @@ def answer_create(request,question_id):
     context = {'form' : form, 'question' :question}
     return render(request, 'pybo/question_detail.html', context)
 
+@login_required(login_url = 'common:login')
 def question_create(request):
     ## 질문 등록하기 버튼 과 저장하기 버튼 둘다 question_create를 호출함 : 구분을 post와 get으로 한다.
     """
@@ -68,6 +72,7 @@ def question_create(request):
         form = QuestionForm(request.POST) #request.POST 에는 subject와 content가 들어있음
         if form.is_valid():
             question = form.save(commit=False) # 임시저장 : creat_date 정보가 없기 때문
+            question.author = request.user
             question.create_date = timezone.now()
             question.save()
             return redirect('pybo:index')
