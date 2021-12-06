@@ -1,4 +1,4 @@
-from django.core import paginator
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 #from django.http import HttpResponse
@@ -80,3 +80,30 @@ def question_create(request):
         form = QuestionForm() #get
     context = {'form' : form}
     return render(request, 'pybo/question_form.html', context)
+
+@login_required(login_url = 'common:login')
+def question_modify(request, question_id):
+    """
+        pybo 질문수정
+    """
+    
+    question = get_object_or_404(Question, pk = question_id)
+    if request.user != question.author:
+        messages.error(request, '수정 권한이 없습니다')
+        return redirect('pybo:detail', question_id = question_id)
+    
+    if request.method == "POST":
+        form = QuestionForm(request.POST, instance=question) 
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.modify_date = timezone.now()
+            question.save()
+            return redirect('pybo:detail', question_id = question_id)
+    else:
+        form = QuestionForm(instance=question)  # form생성시 폼의 속성 값이 instance 값으로 채워짐
+                                                # 질문을 수정하는 화면에서 제목과 내용이 채워진 채로 보여짐                                                   
+        
+    context = {'form': form}
+    return render(request, 'pybo/question_form.html', context)
+            
+    
